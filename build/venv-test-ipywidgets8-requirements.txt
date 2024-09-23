@@ -6,6 +6,6 @@ jupyter
 # List of requirements for conda environments that cannot be installed using conda
 ipywidgets
 anywidget
-ipysheet==0.5.0
+ipysheet==0.7.0
 matplotlib
 ipympl
