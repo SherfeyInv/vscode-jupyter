@@ -2123,7 +2123,7 @@
         "@jupyter-widgets/controls": "3.0.0",
         "@jupyter-widgets/schema": "0.4.0",
         "@jupyterlab/coreutils": "5.1.17",
-        "@jupyterlab/nbformat": "3.1.17",
+        "@jupyterlab/nbformat": "3.6.7",
         "@jupyterlab/services": "6.1.17",
         "@lumino/widgets": "^1.28.0",
         "@nteract/messaging": "^7.0.0",
