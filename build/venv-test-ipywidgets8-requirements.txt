@@ -9,3 +9,7 @@ anywidget
 ipysheet==0.5.0
 matplotlib
 ipympl
+anyio>=4.4.0 # not directly required, pinned by Snyk to avoid a vulnerability
+jupyter-server>=2.14.1 # not directly required, pinned by Snyk to avoid a vulnerability
+tornado>=6.4.1 # not directly required, pinned by Snyk to avoid a vulnerability
+zipp>=3.19.1 # not directly required, pinned by Snyk to avoid a vulnerability
