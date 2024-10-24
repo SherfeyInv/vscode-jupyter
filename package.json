@@ -2120,7 +2120,7 @@
         "@c4312/evt": "^0.1.1",
         "@enonic/fnv-plus": "^1.3.0",
         "@jupyter-widgets/base": "4.0.0",
-        "@jupyter-widgets/controls": "3.0.0",
+        "@jupyter-widgets/controls": "5.0.0",
         "@jupyter-widgets/schema": "0.4.0",
         "@jupyterlab/coreutils": "5.1.17",
         "@jupyterlab/nbformat": "3.1.17",
@@ -2167,7 +2167,7 @@
         "safe-buffer": "^5.2.1",
         "sanitize-filename": "^1.6.3",
         "semver": "^5.7.2",
-        "slickgrid": "^2.4.17",
+        "slickgrid": "^3.0.0",
         "stack-trace": "0.0.10",
         "string-argv": "^0.3.1",
         "strip-comments": "^2.0.1",
@@ -2184,7 +2184,7 @@
         "vscode-languageclient": "8.0.2-next.5",
         "vscode-tas-client": "^0.1.84",
         "ws": "^6.2.3",
-        "zeromq": "^6.0.0-beta.16",
+        "zeromq": "^6.1.0",
         "zeromqold": "npm:zeromq@^6.0.0-beta.6"
     },
     "devDependencies": {
