@@ -21,7 +21,8 @@ import {
     NotebookEdit,
     NotebookCellOutputItem,
     Disposable,
-    window
+    window,
+    extensions
 } from 'vscode';
 
 import type { Kernel } from '@jupyterlab/services';
@@ -41,9 +42,10 @@ import { swallowExceptions } from '../../platform/common/utils/decorators';
 import { noop } from '../../platform/common/utils/misc';
 import { IKernelController, ITracebackFormatter } from '../../kernels/types';
 import { handleTensorBoardDisplayDataOutput } from './executionHelpers';
-import { Identifiers, WIDGET_MIMETYPE } from '../../platform/common/constants';
+import { Identifiers, RendererExtension, WIDGET_MIMETYPE } from '../../platform/common/constants';
 import { CellOutputDisplayIdTracker } from './cellDisplayIdTracker';
 import { createDeferred } from '../../platform/common/utils/async';
+import { coerce, SemVer } from 'semver';
 
 // Helper interface for the set_next_input execute reply payload
 interface ISetNextInputPayload {
@@ -714,13 +716,15 @@ export class CellExecutionMessageHandler implements IDisposable {
             // Jupyter Output widgets cannot be rendered properly by the widget manager,
             // We need to render that.
             if (typeof data.model_id === 'string' && this.commIdsMappedToWidgetOutputModels.has(data.model_id)) {
-                return false;
+                // New version of renderer supports this.
+                return doesNotebookRendererSupportRenderingNestedOutputsInWidgets();
             }
             return true;
         }
         if (mime.startsWith('application/vnd')) {
-            // Custom vendored mimetypes cannot be rendered by the widget manager, it relies on the output renderers.
-            return false;
+            // Custom vendored mimetypes cannot be rendered by the widget manager in older versions, it relies on the output renderers.
+            // New version of renderer supports this.
+            return doesNotebookRendererSupportRenderingNestedOutputsInWidgets();
         }
         // Everything else can be rendered by the Jupyter Lab widget manager.
         return true;
@@ -944,6 +948,12 @@ export class CellExecutionMessageHandler implements IDisposable {
                 getParentHeaderMsgId(msg)
         ) {
             // Stream messages will be handled by the Output Widget.
+            return;
+        }
+
+        if (msg.parent_header.msg_id === 'comm_msg' && msg.header.msg_type === 'stream') {
+            // Fix for https://github.com/microsoft/vscode-jupyter/issues/15996
+            // We're not interested in stream messages that are part of comm messages.
             return;
         }
 
@@ -1208,4 +1218,17 @@ export class CellExecutionMessageHandler implements IDisposable {
         }
         this.endTemporaryTask();
     }
+}
+
+function doesNotebookRendererSupportRenderingNestedOutputsInWidgets() {
+    const rendererExtension = extensions.getExtension(RendererExtension);
+    if (!rendererExtension) {
+        return false;
+    }
+
+    const version = coerce(rendererExtension.packageJSON.version);
+    if (!version) {
+        return false;
+    }
+    return version.compare(new SemVer('1.0.23')) >= 0;
 }
