@@ -18,6 +18,7 @@ export namespace Common {
     export const refresh = l10n.t('Refresh');
     export const refreshing = l10n.t('Refreshing...');
     export const install = l10n.t('Install');
+    export const downloadAndInstall = l10n.t('Download and Install');
     export const loadingExtension = l10n.t('Jupyter Extension loading...');
     export const handleExtensionActivationError = l10n.t(
         "Extension activation failed, run the 'Developer: Toggle Developer Tools' command for more information."
@@ -144,12 +145,14 @@ export namespace DataScience {
         pythonEnvName: string,
         pythonModuleName: string
     ) => l10n.t("Running cells with '{0}' requires the {1} package.", pythonEnvName, pythonModuleName);
-    export const installPackageInstructions = (pythonModuleName: string, commandId: string) =>
+    export const createANewPythonEnvironment = () =>
         l10n.t(
-            "Run the following command to install '{0}' into the Python environment. \nCommand: '{1}'",
-            pythonModuleName,
-            commandId
+            '[Create a Python Environment](command:jupyter.createPythonEnvAndSelectController) with the required packages.'
         );
+    export const installPackageInstructions = (pythonModuleName: string, commandId: string) =>
+        l10n.t("Install '{0}' into the Python environment. \nCommand: '{1}'", pythonModuleName, commandId);
+    export const OrInstallPackageInstructions = (pythonModuleName: string, commandId: string) =>
+        l10n.t("Or install '{0}' using the command: '{1}'", pythonModuleName, commandId);
     export const pythonCondaKernelsWithoutPython = l10n.t(
         'The Python Runtime and IPyKernel will be automatically installed upon selecting this environment.'
     );
@@ -348,9 +351,9 @@ export namespace DataScience {
     export const noKernelConnected = l10n.t('No kernel connected');
     export const jupyterSelectUriCommandLabel = l10n.t('Enter the URL of the running Jupyter Server...');
     export const jupyterSelectUriInputTitle = l10n.t('Enter the URL of the running Jupyter Server');
-    export const jupyterSelectUriInputPlaceholder = l10n.t('Enter the url of the running Jupyter Server');
+    export const jupyterSelectUriInputPlaceholder = l10n.t('Enter the URL of the running Jupyter Server');
     export const connectToToTheJupyterServer = (url: string) => l10n.t('Connect to the Jupyter Server {0}', url);
-    export const enterOrSelectRemoteJupyterPlaceholder = l10n.t('Enter a remote url, or select a remote server');
+    export const enterOrSelectRemoteJupyterPlaceholder = l10n.t('Enter a remote URL, or select a remote server');
     export const selectRemoteJupyterPlaceholder = l10n.t('Select a remote server');
     export const jupyterServerLastConnectionForQuickPickDescription = (date: Date) =>
         l10n.t('Last connected {0}', fromNow(date, true, false, false));

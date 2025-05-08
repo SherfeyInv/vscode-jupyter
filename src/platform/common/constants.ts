@@ -23,6 +23,7 @@ export const NOTEBOOK_SELECTOR = [
 export const CodespaceExtensionId = 'GitHub.codespaces';
 export const JVSC_EXTENSION_ID = 'ms-toolsai.jupyter';
 export const DATA_WRANGLER_EXTENSION_ID = 'ms-toolsai.datawrangler';
+export const PROPOSED_API_ALLOWED_PUBLISHERS = ['donjayamanne'];
 export const POWER_TOYS_EXTENSION_ID = 'ms-toolsai.vscode-jupyter-powertoys';
 export const JUPYTER_HUB_EXTENSION_ID = 'ms-toolsai.jupyter-hub';
 export const AppinsightsKey = '0c6ae279ed8443289764825290e4f9e2-1a736e7c-1324-4338-be46-fc2a58ae4d14-7255';
@@ -104,6 +105,7 @@ export const DefaultTheme = 'Default Light+';
 // Python Module to be used when instantiating the Python Daemon.
 
 export const PythonExtension = 'ms-python.python';
+export const PythonEnvironmentExtension = 'ms-python.vscode-python-envs';
 export const RendererExtension = 'ms-toolsai.jupyter-renderers';
 export const PylanceExtension = 'ms-python.vscode-pylance';
 
@@ -359,7 +361,6 @@ export enum Telemetry {
     PandasTooOld = 'DS_INTERNAL.SHOW_DATA_PANDAS_TOO_OLD',
     PandasOK = 'DS_INTERNAL.SHOW_DATA_PANDAS_OK',
     PandasInstallCanceled = 'DS_INTERNAL.SHOW_DATA_PANDAS_INSTALL_CANCELED',
-    DataScienceSettings = 'DS_INTERNAL.SETTINGS',
     VariableExplorerVariableCount = 'DS_INTERNAL.VARIABLE_EXPLORER_VARIABLE_COUNT',
     AddCellBelow = 'DATASCIENCE.ADD_CELL_BELOW',
     GetPasswordFailure = 'DS_INTERNAL.GET_PASSWORD_FAILURE',
@@ -381,6 +382,7 @@ export enum Telemetry {
     NewJupyterKernelApiUsage = 'DATASCIENCE.JUPYTER_NEW_KERNEL_API_USAGE',
     NewJupyterKernelsApiUsage = 'DATASCIENCE.JUPYTER_NEW_KERNELS_API_USAGE',
     NewJupyterKernelApiExecution = 'DATASCIENCE.JUPYTER_NEW_KERNEL_API_EXEC',
+    NewJupyterKernelApiKernelStartupWaitUntil = 'DATASCIENCE.JUPYTER_NEW_KERNEL_API_KERNEL_STARTUP_WAIT_UNTIL',
     JupyterKernelApiAccess = 'DATASCIENCE.JUPYTER_KERNEL_API_ACCESS',
     JupyterKernelStartupHook = 'DATASCIENCE.JUPYTER_KERNEL_STARTUP_HOOK',
     JupyterKernelSpecEnumeration = 'DATASCIENCE.JUPYTER_KERNEL_SPEC_FETCH_FAILURE',

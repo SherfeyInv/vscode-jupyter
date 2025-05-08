@@ -77,10 +77,16 @@ export class KernelProvider extends BaseCoreKernelProvider {
             settings,
             options.controller,
             this.startupCodeProviders.getProviders(notebookType),
-            this.workspaceStorage
+            this.workspaceStorage,
+            undefined,
+            undefined
         ) as IKernel;
         kernel.onRestarted(() => this._onDidRestartKernel.fire(kernel), this, this.disposables);
-        kernel.onPostInitialized(() => this._onDidPostInitializeKernel.fire(kernel), this, this.disposables);
+        kernel.onPostInitialized(
+            (e) => e.waitUntil(this._onDidPostInitializeKernel.fireAsync({ kernel }, e.token)),
+            this,
+            this.disposables
+        );
         kernel.onDisposed(() => this._onDidDisposeKernel.fire(kernel), this, this.disposables);
         kernel.onStarted(() => this._onDidStartKernel.fire(kernel), this, this.disposables);
         kernel.onStatusChanged(
@@ -130,10 +136,16 @@ export class ThirdPartyKernelProvider extends BaseThirdPartyKernelProvider {
             this.sessionCreator,
             settings,
             this.startupCodeProviders.getProviders(notebookType),
-            this.workspaceStorage
+            this.workspaceStorage,
+            undefined,
+            undefined
         );
         kernel.onRestarted(() => this._onDidRestartKernel.fire(kernel), this, this.disposables);
-        kernel.onPostInitialized(() => this._onDidPostInitializeKernel.fire(kernel), this, this.disposables);
+        kernel.onPostInitialized(
+            (e) => e.waitUntil(this._onDidPostInitializeKernel.fireAsync({ kernel }, e.token)),
+            this,
+            this.disposables
+        );
         kernel.onDisposed(() => this._onDidDisposeKernel.fire(kernel), this, this.disposables);
         kernel.onStarted(() => this._onDidStartKernel.fire(kernel), this, this.disposables);
         kernel.onStatusChanged(

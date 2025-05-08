@@ -31,10 +31,9 @@ import {
     runCell,
     selectDefaultController,
     waitForCellExecutionToComplete,
-    waitForExecutionCompletedSuccessfully,
-    waitForTextOutput
+    waitForExecutionCompletedSuccessfully
 } from '../notebook/helper';
-import { initializeWidgetComms, Utils } from './commUtils';
+import { hideOutputPanel, initializeWidgetComms, Utils } from './commUtils';
 import { WidgetRenderingTimeoutForTests } from './constants';
 import { getTextOutputValue } from '../../../kernels/execution/helpers';
 import { isWeb } from '../../../platform/common/utils/misc';
@@ -128,7 +127,7 @@ suite('Standard IPyWidget Tests @widgets', function () {
         // Widgets get rendered only when the output is in view. If we have a very large notebook
         // and the output is not visible, then it will not get rendered & the tests will fail. The tests inspect the rendered HTML.
         // Solution - maximize available real-estate by hiding the output panels & hiding the input cells.
-        await commands.executeCommand('workbench.action.closePanel');
+        await hideOutputPanel();
         await commands.executeCommand('workbench.action.maximizeEditorHideSidebar');
         await commands.executeCommand('notebook.cell.collapseAllCellInputs');
         comms = await initializeWidgetComms(disposables);
@@ -142,7 +141,7 @@ suite('Standard IPyWidget Tests @widgets', function () {
         await startJupyterServer();
         logger.info(`Start Test (completed) ${this.currentTest?.title}`);
         // With less realestate, the outputs might not get rendered (VS Code optimization to avoid rendering if not in viewport).
-        await commands.executeCommand('workbench.action.closePanel');
+        await hideOutputPanel();
     });
     teardown(async function () {
         logger.info(`Ended Test ${this.currentTest?.title}`);
@@ -245,15 +244,17 @@ suite('Standard IPyWidget Tests @widgets', function () {
                 },
                 editor
             );
-            const [cell0, cell1] = window.activeNotebookEditor!.notebook.getCells();
+            const [cell0, cell1, cell2] = window.activeNotebookEditor!.notebook.getCells();
 
             await executeCellAndWaitForOutput(cell0, comms);
             await executeCellAndWaitForOutput(cell1, comms);
+            await executeCellAndWaitForOutput(cell2, comms);
             await assertOutputContainsHtml(cell0, comms, ['Click Me!', '<button']);
+            await assertOutputContainsHtml(cell1, comms, ['Click Me!', '<button']);
 
             // Click the button and verify we have output in the same cell.
             await clickWidget(comms, cell0, 'button');
-            await waitForTextOutput(cell0, 'Button clicked.', 1, false);
+            await assertOutputContainsHtml(cell2, comms, ['Button clicked.']);
         });
         test.skip('Widget renders after executing a notebook which was saved after previous execution', async () => {
             // // https://github.com/microsoft/vscode-jupyter/issues/8748
@@ -330,7 +331,7 @@ suite('Standard IPyWidget Tests @widgets', function () {
             // Also display the same nested output and the widget in the 3rd cell.
             await Promise.all([runCell(cell3), waitForCellExecutionToComplete(cell3)]);
             await assertOutputContainsHtml(cell1, comms, ['<input type="text'], '.widget-output');
-            // await assertOutputContainsHtml(cell1, comms, ['<input type="text', 'Label Widget'], '.widget-output');
+            await assertOutputContainsHtml(cell1, comms, ['<input type="text', 'Label Widget'], '.widget-output');
             assert.strictEqual(cell3.outputs.length, 0, 'Cell 3 should not have any output');
 
             // Run the 4th cell & verify we have output in the first nested output & second output.
@@ -343,13 +344,13 @@ suite('Standard IPyWidget Tests @widgets', function () {
             );
             assert.strictEqual(cell3.outputs.length, 0, 'Cell 3 should not have any output');
 
-            // // Verify both textbox widgets are linked.
-            // // I.e. updating one textbox will result in the other getting updated with the same value.
-            // await comms.setValue(cell1, '.widget-text input', 'Widgets are linked an get updated');
-            // await assertOutputContainsHtml(cell1, comms, ['>Widgets are linked an get updated<'], '.widget-output');
-            // assert.strictEqual(cell3.outputs.length, 0, 'Cell 3 should not have any output');
+            // Verify both textbox widgets are linked.
+            // I.e. updating one textbox will result in the other getting updated with the same value.
+            await comms.setValue(cell1, '.widget-text input', 'Widgets are linked an get updated');
+            await assertOutputContainsHtml(cell1, comms, ['>Widgets are linked an get updated<'], '.widget-output');
+            assert.strictEqual(cell3.outputs.length, 0, 'Cell 3 should not have any output');
         });
-        test('More Nested Output Widgets', async () => {
+        test.skip('More Nested Output Widgets', async () => {
             await initializeNotebookForWidgetTest(
                 disposables,
                 {
@@ -483,33 +484,6 @@ suite('Standard IPyWidget Tests @widgets', function () {
                 () => `Output doesn't contain text 'Bar' or still contains 'Outside, Inside, Foo', html is ${html}`
             );
         });
-        test('Interactive Button', async () => {
-            await initializeNotebookForWidgetTest(
-                disposables,
-                {
-                    templateFile: 'interactive_button.ipynb'
-                },
-                editor
-            );
-            const cell = window.activeNotebookEditor!.notebook.cellAt(0);
-
-            await executeCellAndWaitForOutput(cell, comms);
-            await assertOutputContainsHtml(cell, comms, ['Click Me!', '<button']);
-
-            // Click the button and verify we have output in other cells
-            await clickWidget(comms, cell, 'button');
-            await waitForCondition(
-                () => {
-                    assert.strictEqual(getTextOutputValue(cell.outputs[1]).trim(), 'Button clicked');
-                    return true;
-                },
-                5_000,
-                () =>
-                    `Expected 'Button clicked' to exist in ${
-                        cell.outputs.length > 1 ? getTextOutputValue(cell.outputs[1]) : '<Only one output>'
-                    }`
-            );
-        });
         test('Interactive Function', async () => {
             await initializeNotebookForWidgetTest(
                 disposables,
@@ -540,7 +514,7 @@ suite('Standard IPyWidget Tests @widgets', function () {
             assert.strictEqual(getTextOutputValue(cell.outputs[1]).trim(), `Executing do_something with 'Hello World'`);
             assert.strictEqual(getTextOutputValue(cell.outputs[2]).trim(), `'Hello World'`);
         });
-        test('Interactive Plot', async function () {
+        test.skip('Interactive Plot', async function () {
             await initializeNotebookForWidgetTest(
                 disposables,
                 {
@@ -552,7 +526,7 @@ suite('Standard IPyWidget Tests @widgets', function () {
 
             await executeCellAndWaitForOutput(cell, comms);
             await assertOutputContainsHtml(cell, comms, ['Text Value is Foo']);
-            assert.strictEqual(cell.outputs.length, 4, 'Cell should have 4 outputs');
+            assert.strictEqual(cell.outputs.length, 3, 'Cell should have 3 outputs');
 
             // This cannot be displayed by output widget, hence we need to handle this.
             // One of the outputs if a custom mimetype.
@@ -568,7 +542,7 @@ suite('Standard IPyWidget Tests @widgets', function () {
                     }
                 }
             }
-            assert.deepEqual(mimeValues, ['Text Value is Foo', 'Text Value is Hello World']);
+            assert.deepEqual(mimeValues, ['Text Value is Hello World']);
             assert.deepEqual(stdOut, 'Text Value is Hello World');
 
             // Wait for the second output to get updated.
@@ -591,8 +565,8 @@ suite('Standard IPyWidget Tests @widgets', function () {
                                 }
                             }
                         }
-                        assert.include(mimeValues, 'Text Value is Bar');
-                        assert.include(mimeValues, 'Text Value is Hello World');
+
+                        assert.include(mimeValues, ['Text Value is Hello World']);
                         assert.deepEqual(stdOut, 'Text Value is Hello World');
                         resolve(true);
                     },

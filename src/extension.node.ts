@@ -58,15 +58,9 @@ import {
     activate as activateExecutionAnalysis,
     deactivate as deactivateExecutionAnalysis
 } from './standalone/executionAnalysis/extension';
-import { activate as activateChat, deactivate as deactivateChat } from './standalone/chat/extesnion';
+import { activate as activateChat, deactivate as deactivateChat } from './standalone/chat/extension';
 import { setDisposableTracker } from './platform/common/utils/lifecycle';
-import {
-    initializeLoggers,
-    displayProgress,
-    handleError,
-    initializeGlobals,
-    postActivateLegacy
-} from './extension.common';
+import { initializeLoggers, handleError, initializeGlobals, postActivateLegacy } from './extension.common';
 import { activateNotebookTelemetry } from './kernels/telemetry/notebookTelemetry';
 import { deleteOldTempDirs } from './platform/common/temp.node';
 
@@ -127,7 +121,10 @@ export async function activate(context: IExtensionContext): Promise<IExtensionAp
             kernels: {
                 getKernel: () => Promise.resolve(undefined),
                 onDidStart: () => ({ dispose: noop })
-            }
+            },
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            onDidChangePythonEnvironment: undefined as any,
+            getPythonEnvironment: () => undefined
         };
     }
 }
@@ -156,31 +153,26 @@ function activateUnsafe(
     context: IExtensionContext,
     standardOutputChannel: OutputChannel
 ): [IExtensionApi, Promise<void>, IServiceContainer] {
-    const progress = displayProgress();
-    try {
-        //===============================================
-        // activation starts here
+    //===============================================
+    // activation starts here
 
-        const [serviceManager, serviceContainer] = initializeGlobals(context, standardOutputChannel);
-        activatedServiceContainer = serviceContainer;
-        initializeTelemetryGlobals((interpreter) =>
-            serviceContainer.get<IInterpreterPackages>(IInterpreterPackages).getPackageVersions(interpreter)
-        );
-        const activationPromise = activateLegacy(context, serviceManager, serviceContainer);
+    const [serviceManager, serviceContainer] = initializeGlobals(context, standardOutputChannel);
+    activatedServiceContainer = serviceContainer;
+    initializeTelemetryGlobals((interpreter) =>
+        serviceContainer.get<IInterpreterPackages>(IInterpreterPackages).getPackageVersions(interpreter)
+    );
+    const activationPromise = activateLegacy(context, serviceManager, serviceContainer);
 
-        //===============================================
-        // activation ends here
+    //===============================================
+    // activation ends here
 
-        //===============================================
-        // dynamically load standalone plugins
-        activateExecutionAnalysis(context).then(noop, noop);
-        activateChat(context).then(noop, noop);
+    //===============================================
+    // dynamically load standalone plugins
+    activateExecutionAnalysis(context).then(noop, noop);
+    activateChat(context, serviceContainer).then(noop, noop);
 
-        const api = buildApi(activationPromise, serviceManager, serviceContainer, context);
-        return [api, activationPromise, serviceContainer];
-    } finally {
-        progress.dispose();
-    }
+    const api = buildApi(activationPromise, serviceManager, serviceContainer, context);
+    return [api, activationPromise, serviceContainer];
 }
 
 function escapeRegExp(text: string) {

@@ -1,7 +1,7 @@
 {
     "name": "jupyter",
     "displayName": "Jupyter",
-    "version": "2024.11.0",
+    "version": "2025.5.0",
     "description": "Jupyter notebook support, interactive programming and computing that supports Intellisense, debugging and more.",
     "publisher": "ms-toolsai",
     "author": {
@@ -29,7 +29,7 @@
         "theme": "light"
     },
     "engines": {
-        "vscode": "^1.96.0"
+        "vscode": "^1.101.0"
     },
     "l10n": "./l10n",
     "extensionKind": [
@@ -1784,7 +1784,7 @@
                     "type": "boolean",
                     "default": false,
                     "description": "%jupyter.configuration.jupyter.excludeUserSitePackages.description%",
-                    "scope": "application"
+                    "scope": "window"
                 },
                 "jupyter.enableExtendedKernelCompletions": {
                     "type": "boolean",
@@ -2050,6 +2050,62 @@
                     "DataArray"
                 ]
             }
+        ],
+        "languageModelTools": [
+            {
+                "name": "notebook_list_packages",
+                "displayName": "List Notebook Kernel Packages",
+                "modelDescription": "List the installed packages that are currently available in the selected kernel for a notebook editor. This tool should be used when working with a jupyter notebook with python code cells. Do not use this tool if not already working with a notebook, or for a language other than python.",
+                "toolReferenceName": "listNotebookPackages",
+                "tags": [
+                    "notebooks"
+                ],
+                "icon": "$(package)",
+                "canBeReferencedInPrompt": true,
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "filePath": {
+                            "description": "The absolute path of the notebook with the active kernel.",
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "filePath"
+                    ]
+                }
+            },
+            {
+                "name": "notebook_install_packages",
+                "displayName": "Install Packages for Notebook",
+                "modelDescription": "Install a list of packages on a notebook kernel to be used within that notebook. This tool should be used when working with a jupyter notebook with python code cells. Do not use this tool if not already working with a notebook, or for a language other than python.",
+                "toolReferenceName": "installNotebookPackages",
+                "tags": [
+                    "notebooks"
+                ],
+                "icon": "$(package)",
+                "canBeReferencedInPrompt": true,
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "filePath": {
+                            "description": "The absolute path of the notebook with the active kernel.",
+                            "type": "string"
+                        },
+                        "packageList": {
+                            "description": "A list of packages to install.",
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "required": [
+                        "filePath",
+                        "packageList"
+                    ]
+                }
+            }
         ]
     },
     "enabledApiProposals": [
@@ -2079,10 +2135,10 @@
         "preprePublishNonBundle": "gulp clean",
         "updatePackageJsonForBundle": "gulp updatePackageJsonForBundle",
         "prePublishNonBundle": "concurrently npm:compile-out npm:esbuild-all",
-        "compile": "concurrently \"tsc -watch -p ./\" \"npx tsx build/esbuild/build.ts --watch\"",
+        "compile": "concurrently \"tsc --watch -p ./\" \"npx tsx build/esbuild/build.ts --watch\"",
         "compile-esbuild-watch": "npx tsx build/esbuild/build.ts --watch",
-        "compile-tsc-watch": "tsc -p . -watch",
-        "compile-watch-all": "concurrently \"tsc -watch -p ./\" \"npx tsx build/esbuild/build.ts --watch-all\"",
+        "compile-tsc-watch": "tsc -p . --watch",
+        "compile-watch-all": "concurrently \"tsc --watch -p ./\" \"npx tsx build/esbuild/build.ts --watch-all\"",
         "compile-out": "tsc -p ./",
         "compile-web-test": "webpack --mode development --config ./build/webpack/webpack.extension.web.config.js",
         "compile-web-test-watch": "webpack --mode development --config ./build/webpack/webpack.extension.web.config.js --stats-error-details --watch --progress",
@@ -2222,7 +2278,7 @@
         "@types/loader-utils": "^1.1.3",
         "@types/lodash": "^4.14.104",
         "@types/memoize-one": "^4.1.1",
-        "@types/mocha": "^9.1.0",
+        "@types/mocha": "^10.0.10",
         "@types/nock": "^10.0.3",
         "@types/node": "^20.17.0",
         "@types/node-fetch": "^2.5.7",
@@ -2257,7 +2313,7 @@
         "@vscode/test-cli": "^0.0.8",
         "@vscode/test-electron": "^2.3.9",
         "@vscode/test-web": "^0.0.61",
-        "@vscode/zeromq": "^0.2.5",
+        "@vscode/zeromq": "^0.2.3",
         "acorn": "^8.9.0",
         "babel-polyfill": "^6.26.0",
         "buffer": "^6.0.3",
@@ -2275,8 +2331,8 @@
         "del": "^3.0.0",
         "es-abstract": "^1.19.1",
         "es5-ext": "^0.10.63",
-        "esbuild": "^0.19.4",
-        "esbuild-plugin-less": "^1.3.1",
+        "esbuild": "^0.25.1",
+        "esbuild-plugin-less": "^1.3.19",
         "eslint": "^8.52.0",
         "eslint-config-airbnb": "^19.0.4",
         "eslint-config-prettier": "^9.0.0",
@@ -2307,7 +2363,7 @@
         "less-plugin-inline-urls": "^1.2.0",
         "lolex": "^6.0.0",
         "lru-cache": "^10.0.0",
-        "mocha": "^10.2.0",
+        "mocha": "^11.0.1",
         "mocha-junit-reporter": "^2.2.0",
         "mocha-multi-reporters": "^1.5.1",
         "nock": "^13.3.1",
@@ -2316,7 +2372,7 @@
         "node-polyfill-webpack-plugin": "^4.0.0",
         "nyc": "^15.1.0",
         "popper.js": "^1.16.1",
-        "postcss": "^8.4.31",
+        "postcss": "^8.4.49",
         "postcss-import": "^15.1.0",
         "postcss-loader": "^7.3.3",
         "postcss-preset-env": "^8.5.1",
@@ -2337,7 +2393,7 @@
         "tsconfig-paths-webpack-plugin": "^3.2.0",
         "tsx": "^3.13.0",
         "typemoq": "^2.1.0",
-        "typescript": "^5.6.3",
+        "typescript": "^5.7.2",
         "unicode-properties": "^1.3.1",
         "utf-8-validate": "^5.0.8",
         "util": "^0.12.4",
