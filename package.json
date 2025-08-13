@@ -2185,7 +2185,7 @@
         "sudo-prompt": "^9.2.1",
         "svg-to-pdfkit": "^0.1.8",
         "tcp-port-used": "^1.0.1",
-        "tmp": "^0.0.29",
+        "tmp": "^0.2.4",
         "uint64be": "^1.0.1",
         "underscore": "^1.12.1",
         "url-parse": "^1.5.10",
