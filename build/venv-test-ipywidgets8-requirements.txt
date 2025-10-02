@@ -9,3 +9,4 @@ anywidget
 ipysheet==0.5.0
 matplotlib
 ipympl
+jupyterlab>=4.4.8 # not directly required, pinned by Snyk to avoid a vulnerability
