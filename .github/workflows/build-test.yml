@@ -66,7 +66,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Use Node ${{env.NODE_VERSION}}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: ${{env.NODE_VERSION}}
 
@@ -107,7 +107,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Use Node ${{env.NODE_VERSION}}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: ${{env.NODE_VERSION}}
 
@@ -194,7 +194,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Use Node ${{env.NODE_VERSION}}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: ${{env.NODE_VERSION}}
 
@@ -403,7 +403,7 @@ jobs:
           PYTHON_VERSION: ${{matrix.pythonVersion}}
 
       - name: Use Node ${{env.NODE_VERSION}}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: ${{env.NODE_VERSION}}
 
@@ -799,7 +799,7 @@ jobs:
         run: echo "CI_PYTHON_PATH=${{ steps.setupPythonVersion.outputs.python-path }}" >> $GITHUB_ENV
 
       - name: Use Node ${{env.NODE_VERSION}}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: ${{env.NODE_VERSION}}
 
